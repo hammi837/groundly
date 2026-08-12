@@ -1,0 +1,27 @@
+:root {
+  --g-teal-700: #0f766e;
+  --g-teal-600: #0d9488;
+  --g-teal-100: #ccfbf1;
+  --g-ink: #0b1220;
+  --g-ink-soft: #1e293b;
+  --g-slate: #64748b;
+  --g-line: #e2e8f0;
+  --g-surface: #f7f9f8;
+  --g-surface-elevated: #ffffff;
+  --g-danger: #b91c1c;
+  --g-warning: #b45309;
+  --g-success: #047857;
+
+  --color-bg: var(--g-surface);
+  --color-bg-card: var(--g-surface-elevated);
+  --color-text: var(--g-ink);
+  --color-text-muted: var(--g-slate);
+  --color-primary: var(--g-teal-700);
+  --color-primary-hover: var(--g-teal-600);
+  --color-border: var(--g-line);
+  --color-accent-soft: var(--g-teal-100);
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-ui: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}

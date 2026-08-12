@@ -1,0 +1,63 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+secrets/
+
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.cache/
+
+# Uploads / local data
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.sqlite3
+
+# Node / frontend / widget
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+widget/node_modules/
+widget/dist/*
+!widget/dist/.gitkeep
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editors
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Cursor / local agent junk
+.cursor/
+*.local.md
+
+# Logs & temp
+*.log
+tmp/
+temp/
+.temp/

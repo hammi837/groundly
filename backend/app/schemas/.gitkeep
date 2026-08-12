@@ -1,0 +1,2 @@
+# Pydantic request/response schemas
+# auth.py, documents.py, chat.py, leads.py, settings.py, analytics.py
