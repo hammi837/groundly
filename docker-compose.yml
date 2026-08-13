@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: HAMMAD123
+      POSTGRES_DB: groundly
+    ports:
+      # Host 5433 → container 5432 (your local Postgres already uses 5432)
+      - "5433:5432"
+    volumes:
+      - groundly_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d groundly"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:HAMMAD123@postgres:5432/groundly
+      DATABASE_URL_SYNC: postgresql://postgres:HAMMAD123@postgres:5432/groundly
+      REDIS_URL: redis://redis:6379/0
+      EMBEDDING_MODE: ${EMBEDDING_MODE:-fake}
+      LLM_MODE: ${LLM_MODE:-fake}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./scripts:/scripts
+      - groundly_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:HAMMAD123@postgres:5432/groundly
+      DATABASE_URL_SYNC: postgresql://postgres:HAMMAD123@postgres:5432/groundly
+      REDIS_URL: redis://redis:6379/0
+      EMBEDDING_MODE: ${EMBEDDING_MODE:-fake}
+      LLM_MODE: ${LLM_MODE:-fake}
+    volumes:
+      - ./backend:/app
+      - groundly_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: arq app.workers.settings.WorkerSettings
+
+volumes:
+  groundly_pg:
+  groundly_uploads:
