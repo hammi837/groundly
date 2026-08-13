@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riverside Dental — Widget Demo (hostile CSS)</title>
+    <style>
+      /* Hostile host styles — widget must survive via Shadow DOM */
+      * { box-sizing: border-box !important; }
+      body {
+        margin: 0;
+        font-family: "Comic Sans MS", cursive !important;
+        background: hotpink !important;
+        color: yellow !important;
+      }
+      button {
+        background: lime !important;
+        border-radius: 0 !important;
+        font-size: 40px !important;
+        width: 100% !important;
+      }
+      div, span, p, input, textarea {
+        color: magenta !important;
+        border: 3px solid blue !important;
+        padding: 20px !important;
+      }
+      h1 { font-size: 64px; text-transform: uppercase; }
+      .site {
+        max-width: 720px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background: #222;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="site">
+      <h1>Riverside Dental</h1>
+      <p>
+        This host page intentionally uses broken, conflicting CSS. If the Groundly
+        chat bubble still looks clean, Shadow DOM isolation works.
+      </p>
+      <button type="button">Fake host button (should look terrible)</button>
+      <p>
+        Set your tenant API key below (from seed output), then reload — or edit the
+        script tag <code>data-api-key</code>.
+      </p>
+    </div>
+
+    <!--
+      Dev: use Vite (`npm run dev`) which serves this page and the module.
+      Prod: point src to /dist/widget.js after `npm run build`.
+    -->
+    <script type="module">
+      import { mountGroundlyWidget } from "/src/index.ts";
+
+      const params = new URLSearchParams(location.search);
+      const apiKey = params.get("apiKey") || localStorage.getItem("groundly_demo_api_key") || "";
+      const apiBase = params.get("apiBase") || "http://localhost:8000";
+
+      if (!apiKey) {
+        const entered = prompt("Paste Groundly tenant API key (from seed):", "");
+        if (entered) {
+          localStorage.setItem("groundly_demo_api_key", entered);
+          location.reload();
+        } else {
+          document.querySelector(".site").insertAdjacentHTML(
+            "beforeend",
+            "<p><strong>No API key — widget not mounted.</strong> Reopen with ?apiKey=...</p>"
+          );
+        }
+      } else {
+        localStorage.setItem("groundly_demo_api_key", apiKey);
+        mountGroundlyWidget({
+          apiBaseUrl: apiBase,
+          apiKey,
+        });
+      }
+    </script>
+  </body>
+</html>
