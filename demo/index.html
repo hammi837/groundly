@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Groundly — AI support grounded in your docs</title>
+    <meta
+      name="description"
+      content="Groundly answers only from your business docs — with citations and human handoff when unsure."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="#top" aria-label="Groundly home">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span class="brand-name">Groundly</span>
+      </a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="#how">How it works</a>
+        <a href="http://localhost:5173">Admin demo</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="brand-hero">Groundly</p>
+          <h1 id="hero-title">AI support that only answers from your docs.</h1>
+          <p class="lede">
+            Citations you can audit. A graceful handoff when the answer isn’t there.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#try">Try the assistant</a>
+            <a class="btn btn-ghost" href="http://localhost:5173">Open admin</a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-plane"></div>
+          <div class="hero-glow"></div>
+          <p class="hero-caption">Live demo · Riverside Dental</p>
+        </div>
+      </section>
+
+      <section class="try" id="try" aria-labelledby="try-title">
+        <h2 id="try-title">Ask Riverside Dental</h2>
+        <p class="section-lede">
+          Open the chat bubble — try hours, insurance, or something the docs don’t cover.
+        </p>
+        <p class="hint" id="setup-hint" hidden></p>
+      </section>
+
+      <section class="how" id="how" aria-labelledby="how-title">
+        <h2 id="how-title">How it works</h2>
+        <p class="section-lede">
+          Grounded answers with sources. Unknown questions become leads — not guesses.
+        </p>
+        <ol class="steps">
+          <li>
+            <strong>Ask from their docs</strong>
+            <span>The bot retrieves FAQs and PDFs for this clinic only.</span>
+          </li>
+          <li>
+            <strong>See the citation</strong>
+            <span>Every grounded reply points back to a source excerpt.</span>
+          </li>
+          <li>
+            <strong>Handoff when unsure</strong>
+            <span>Leave an email — it shows up in the admin leads inbox.</span>
+          </li>
+        </ol>
+        <p class="section-lede" style="margin-top: 1.75rem">
+          Website handout: download the sample patient FAQ PDF and host it on the clinic site —
+          then upload the same file in Groundly admin → Documents.
+        </p>
+        <p>
+          <a class="btn btn-ghost" href="./riverside-patient-faq.pdf" download>
+            Download riverside-patient-faq.pdf
+          </a>
+        </p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>
+        <span class="brand-inline">Groundly</span>
+        · white-label demo · register disabled on public demos
+      </p>
+      <p class="muted">Demo admin: admin@riverside.demo</p>
+    </footer>
+
+    <!--
+      Build widget first: cd widget && npm run build
+      Then: copy dist/widget.js → demo/widget.js
+      Or serve with ?apiKey=... from seed output.
+    -->
+    <script>
+      (function () {
+        const params = new URLSearchParams(location.search);
+        const apiKey =
+          params.get("apiKey") ||
+          localStorage.getItem("groundly_demo_api_key") ||
+          "";
+        const apiBase =
+          params.get("apiBase") ||
+          localStorage.getItem("groundly_demo_api_base") ||
+          "http://127.0.0.1:8000";
+
+        const hint = document.getElementById("setup-hint");
+        if (!apiKey) {
+          hint.hidden = false;
+          hint.textContent =
+            "Add your tenant API key: open this page as demo/index.html?apiKey=YOUR_KEY (from seed output).";
+          return;
+        }
+        localStorage.setItem("groundly_demo_api_key", apiKey);
+        localStorage.setItem("groundly_demo_api_base", apiBase);
+
+        const s = document.createElement("script");
+        s.src = "./widget.js";
+        s.dataset.apiKey = apiKey;
+        s.dataset.apiBase = apiBase;
+        s.onerror = function () {
+          hint.hidden = false;
+          hint.textContent =
+            "Missing demo/widget.js — run: cd widget && npm run build && copy dist\\widget.js ..\\demo\\widget.js";
+        };
+        document.body.appendChild(s);
+      })();
+    </script>
+  </body>
+</html>
