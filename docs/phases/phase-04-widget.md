@@ -46,12 +46,14 @@
 
 ## Acceptance criteria
 
-- [ ] Embed works on demo HTML with hostile global CSS
-- [ ] Streaming tokens render live
-- [ ] Citations visible for grounded answers
-- [ ] Fallback shows lead form; submit hits `/chat/handoff`
-- [ ] `visitor_id` stable across refresh
-- [ ] Usable on a 375px-wide viewport
+- [x] Embed works on demo HTML with hostile global CSS
+- [x] Streaming tokens render live
+- [x] Citations visible for grounded answers
+- [x] Fallback shows lead form; submit hits `/chat/handoff`
+- [x] `visitor_id` stable across refresh
+- [x] Usable on a 375px-wide viewport (bottom-sheet CSS)
+
+> Plain-language writeup: [phase-04-complete.md](phase-04-complete.md).
 
 ---
 

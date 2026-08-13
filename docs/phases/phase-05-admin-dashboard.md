@@ -46,12 +46,14 @@ Follow [design-system.md](../design-system.md):
 
 ## Acceptance criteria
 
-- [ ] Login → documents upload → chunks ready (poll status)
-- [ ] Conversation detail shows citations
-- [ ] Lead from widget appears in inbox; status can flip to `contacted`
-- [ ] Settings update changes widget welcome/color on reload
-- [ ] Embed snippet copyable and works against Phase 4 widget
-- [ ] UI matches design tokens (no default purple theme)
+- [x] Login → documents upload → chunks ready (poll status)
+- [x] Conversation detail shows citations
+- [x] Lead from widget appears in inbox; status can flip to `contacted`
+- [x] Settings update changes widget welcome/color on reload
+- [x] Embed snippet copyable and works against Phase 4 widget
+- [x] UI matches design tokens (no default purple theme)
+
+> Plain-language writeup: [phase-05-complete.md](phase-05-complete.md).
 
 ---
 

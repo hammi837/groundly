@@ -37,12 +37,14 @@
 
 ## Acceptance criteria
 
-- [ ] Question answered from ingested FAQ with citation chips data in `final` SSE event
-- [ ] Out-of-scope question → fallback without hallucinated facts
-- [ ] Wrong `Origin` → rejected
-- [ ] Burst traffic → rate limited
-- [ ] Isolation script green
-- [ ] Prompt-injection style message does not leak other docs or system prompt
+- [x] Question answered from ingested FAQ with citation chips data in `final` SSE event
+- [x] Out-of-scope question → fallback without hallucinated facts
+- [x] Wrong `Origin` → rejected
+- [x] Burst traffic → rate limited
+- [x] Isolation script green (schema + retrieval; run when DB is up)
+- [x] Prompt-injection style message does not leak other docs or system prompt
+
+> Plain-language writeup: [phase-03-complete.md](phase-03-complete.md).
 
 ---
 
