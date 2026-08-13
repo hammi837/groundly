@@ -1,13 +1,19 @@
 # Environment & secrets
 .env
 .env.*
+**/.env
+**/backend/.env
+**/frontend/.env
 !.env.example
+!backend/.env.example
+!frontend/.env.example
 *.pem
 *.key
 credentials*.json
 secrets/
 
 # Python
+backend/.venv/
 .venv/
 venv/
 env/
@@ -37,6 +43,8 @@ frontend/dist/
 frontend/.vite/
 widget/node_modules/
 widget/dist/*
+!widget/dist/widget.js
+!widget/dist/widget.js.map
 !widget/dist/.gitkeep
 npm-debug.log*
 yarn-error.log*
