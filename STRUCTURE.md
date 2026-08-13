@@ -36,8 +36,11 @@ groundly/
 ├── widget/                    # Vanilla JS embed (Shadow DOM)
 │   ├── src/
 │   └── dist/
+├── demo/                      # Brand-first landing + live widget
 ├── scripts/                   # seed, isolation, eval runners
 ├── evals/                     # golden Q&A JSON
+├── docs/ops/                  # deploy checklist
+├── docs/portfolio/            # Fiverr / Loom pack
 └── fixtures/riverside/        # sample PDFs / FAQ content
 ```
 
