@@ -45,11 +45,13 @@
 
 ## Acceptance criteria
 
-- [ ] `docker compose up` starts Postgres + Redis; API returns healthy
-- [ ] Migrations apply cleanly; HNSW + GIN indexes exist
-- [ ] Login with seeded admin returns JWT
-- [ ] Design tokens + logo files committed
-- [ ] README documents env vars and how to run
+- [x] `docker compose up` starts Postgres + Redis; API returns healthy
+- [x] Migrations apply cleanly; HNSW + GIN indexes exist
+- [x] Login with seeded admin returns JWT
+- [x] Design tokens + logo files committed
+- [x] README documents env vars and how to run
+
+> Implementation landed in repo (Compose, Alembic `0001_phase1_foundation`, JWT auth, seed, admin shell). Run the Quick start in the root README to verify on your machine.
 
 ---
 

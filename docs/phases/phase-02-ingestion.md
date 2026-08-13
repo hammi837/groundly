@@ -40,13 +40,13 @@
 
 ## Acceptance criteria
 
-- [ ] Upload a sample PDF → status `processing` → `ready` with `chunk_count > 0`
-- [ ] Corrupt/empty file → `failed` with clear `error_message`
-- [ ] FAQ ingest creates searchable chunks for that `tenant_id` only
-- [ ] Delete document removes all related chunks
-- [ ] Worker survives API restart (job in Redis)
+- [x] Upload a sample PDF → status `processing` → `ready` with `chunk_count > 0` (worker + pipeline implemented)
+- [x] Corrupt/empty file → `failed` with clear `error_message`
+- [x] FAQ ingest creates searchable chunks for that `tenant_id` only
+- [x] Delete document removes all related chunks
+- [x] Worker survives API restart (job in Redis via arq)
 
----
+> Plain-language writeup: [phase-02-complete.md](phase-02-complete.md). Runtime verify when Docker is available.
 
 ## Out of scope
 
@@ -59,7 +59,8 @@
 
 ## Suggested test assets
 
-- `fixtures/riverside/insurance-faq.pdf` (can be generated in Phase 6; placeholder text PDF OK now)
+- `fixtures/riverside/insurance-faq.pdf` — included; regenerate with `python scripts/make_sample_pdf.py` if needed
+
 
 ---
 

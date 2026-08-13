@@ -7,13 +7,19 @@ Master schedule for the Fiverr / portfolio build. Full product spec: [ai-support
 | Phase | Name | Days (part-time) | Outcome |
 |---|---|---|---|
 | [1](phase-01-foundation-brand.md) | Foundation & brand | 2–3 | Design system, logo in repo, Docker, schema, auth, health |
+| · [1 complete — what & why](phase-01-complete.md) | Retrospective | — | Plain-language explanation of everything built in Phase 1 |
 | [2](phase-02-ingestion.md) | Document ingestion | 2 | PDF/FAQ → chunk → embed → status in DB |
+| · [2 complete — what & why](phase-02-complete.md) | Retrospective | — | Plain-language explanation of ingestion pipeline |
 | [3](phase-03-rag-security.md) | Hybrid RAG & security | 2–3 | Grounded SSE chat, citations, fallback, origin + rate limits |
+| · [3 complete — what & why](phase-03-complete.md) | Retrospective | — | Plain-language explanation of RAG + public API security |
 | [4](phase-04-widget.md) | Embeddable widget | 1–2 | Shadow DOM widget buyers see in Loom |
+| · [4 complete — what & why](phase-04-complete.md) | Retrospective | — | Plain-language explanation of the embeddable widget |
 | [5](phase-05-admin-dashboard.md) | Admin dashboard | 2–3 | Docs, conversations, leads, settings — designed UI |
+| · [5 complete — what & why](phase-05-complete.md) | Retrospective | — | Plain-language explanation of the admin dashboard |
 | [6](phase-06-demo-deploy.md) | Demo, eval & launch | 1–2 | Seed, golden eval, live demo, Fiverr assets |
+| · [6 complete — what & why](phase-06-complete.md) | Retrospective | — | Plain-language explanation of demo, eval, and launch pack |
 
-**MVP cut line:** finish Phases **1–5** + Phase 6 deploy/seed (skip crawler/deep analytics if short).  
+**MVP cut line:** finish Phases **1–6** (skip crawler/deep analytics if short).  
 **Total:** ~12–17 days part-time.
 
 ```mermaid
