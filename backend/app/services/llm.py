@@ -338,7 +338,14 @@ async def generate_answer(
 ) -> LlmResult:
     mode = settings.llm_mode.lower().strip()
     if mode == "fake":
-        return _fake_answer(question, chunks, business_name)
+        result = _fake_answer(question, chunks, business_name)
+        answer, was_fallback = _finalize_answer(result.answer)
+        return LlmResult(
+            answer=answer,
+            was_fallback=was_fallback or result.was_fallback,
+            prompt_tokens=result.prompt_tokens,
+            completion_tokens=result.completion_tokens,
+        )
 
     system = build_system_prompt(business_name)
     user = build_user_prompt(question, chunks)
@@ -480,6 +487,13 @@ async def stream_answer_tokens(
     mode = settings.llm_mode.lower().strip()
     if mode == "fake":
         result = _fake_answer(question, chunks, business_name)
+        answer, was_fallback = _finalize_answer(result.answer)
+        result = LlmResult(
+            answer=answer,
+            was_fallback=was_fallback or result.was_fallback,
+            prompt_tokens=result.prompt_tokens,
+            completion_tokens=result.completion_tokens,
+        )
         words = result.answer.split(" ")
         buf: list[str] = []
         for i, w in enumerate(words):
