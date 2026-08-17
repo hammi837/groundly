@@ -3,6 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -48,6 +49,14 @@ class Settings(BaseSettings):
         "http://localhost:4173,http://127.0.0.1:4173,"
         "http://localhost:8000,http://127.0.0.1:8000,null"
     )
+
+    @field_validator("database_url", "database_url_sync", "redis_url", mode="before")
+    @classmethod
+    def _strip_secret_urls(cls, value: object) -> object:
+        # Railway UI paste often adds trailing newlines → DB name "railway\n"
+        if isinstance(value, str):
+            return value.strip()
+        return value
 
     @property
     def upload_path(self) -> Path:
