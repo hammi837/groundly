@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 
 ENV PYTHONPATH=/app
+ENV GROUNDLY_DOCKER_BUILD=2
 EXPOSE 8000
 
 # Railway sets $PORT (often 8080). Fall back to 8000 for local Docker runs.
