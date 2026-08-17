@@ -11,10 +11,11 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
+RUN chmod +x /app/start.sh
 
 ENV PYTHONPATH=/app
-ENV GROUNDLY_DOCKER_BUILD=2
+ENV PORT=8000
+ENV GROUNDLY_DOCKER_BUILD=3
 EXPOSE 8000
 
-# Railway sets $PORT (often 8080). Fall back to 8000 for local Docker runs.
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["/app/start.sh"]
