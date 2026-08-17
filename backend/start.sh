@@ -1,5 +1,8 @@
 #!/bin/sh
 set -e
-echo "Groundly starting… PORT=${PORT:-8000}"
+# Hardcode 8000 to match Railway public domain target port.
+PORT="${PORT:-8000}"
+echo "Groundly starting… PORT=${PORT}"
 alembic upgrade head
-exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+echo "Migrations OK — starting uvicorn"
+exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT}"
