@@ -14,6 +14,16 @@ from app.services.retrieval import RetrievedChunk
 
 FALLBACK_MARKER = "GROUNDLY_FALLBACK"
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_DEFAULT_MODEL = "llama-3.3-70b-versatile"
+
+
+def resolve_llm_model(mode: str | None = None) -> str:
+    """Pick a provider-valid model; Claude ids 404 on Groq if left as default."""
+    active = (mode or settings.llm_mode).lower().strip()
+    model = (settings.llm_model or "").strip()
+    if active == "groq" and (not model or model.lower().startswith("claude")):
+        return GROQ_DEFAULT_MODEL
+    return model or settings.llm_model
 
 # Visitor is wrapping up — reply briefly, no appointment upsell
 _CLOSING_RE = re.compile(
@@ -304,7 +314,7 @@ async def _generate_groq(system: str, user: str) -> LlmResult:
                 "content-type": "application/json",
             },
             json={
-                "model": settings.llm_model,
+                "model": resolve_llm_model("groq"),
                 "max_tokens": 800,
                 "temperature": 0.2,
                 "messages": [
@@ -353,7 +363,16 @@ async def generate_answer(
     if mode == "anthropic":
         return await _generate_anthropic(system, user)
     if mode == "groq":
-        return await _generate_groq(system, user)
+        try:
+            return await _generate_groq(system, user)
+        except Exception:
+            # Keep the widget usable if Groq key/model/network fails
+            result = _fake_answer(question, chunks, business_name)
+            answer, was_fallback = _finalize_answer(result.answer)
+            return LlmResult(
+                answer=answer,
+                was_fallback=was_fallback or result.was_fallback,
+            )
     raise ValueError(f"Unknown llm_mode: {settings.llm_mode}")
 
 
@@ -432,7 +451,7 @@ async def _stream_groq(system: str, user: str) -> AsyncIterator[str | LlmResult]
                 "content-type": "application/json",
             },
             json={
-                "model": settings.llm_model,
+                "model": resolve_llm_model("groq"),
                 "max_tokens": 800,
                 "temperature": 0.2,
                 "stream": True,
@@ -512,7 +531,24 @@ async def stream_answer_tokens(
             yield item
         return
     if mode == "groq":
-        async for item in _stream_groq(system, user):
-            yield item
-        return
+        try:
+            async for item in _stream_groq(system, user):
+                yield item
+            return
+        except Exception:
+            result = _fake_answer(question, chunks, business_name)
+            answer, was_fallback = _finalize_answer(result.answer)
+            result = LlmResult(
+                answer=answer,
+                was_fallback=was_fallback or result.was_fallback,
+            )
+            words = result.answer.split(" ")
+            buf: list[str] = []
+            for i, w in enumerate(words):
+                buf.append(w)
+                if len(buf) >= 4 or i == len(words) - 1:
+                    yield (" ".join(buf) + (" " if i < len(words) - 1 else ""))
+                    buf = []
+            yield result
+            return
     raise ValueError(f"Unknown llm_mode: {settings.llm_mode}")
