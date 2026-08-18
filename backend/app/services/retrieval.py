@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -36,6 +37,44 @@ def _cosine(a: list[float], b: list[float]) -> float:
     if na <= 0 or nb <= 0:
         return 0.0
     return dot / math.sqrt(na * nb)
+
+
+def _lexical_terms(query: str) -> list[str]:
+    stop = {
+        "the",
+        "and",
+        "you",
+        "your",
+        "are",
+        "for",
+        "with",
+        "what",
+        "how",
+        "does",
+        "can",
+        "have",
+        "about",
+        "from",
+        "please",
+        "which",
+        "where",
+        "when",
+        "this",
+        "that",
+        "there",
+    }
+    return [
+        t
+        for t in re.findall(r"[a-z0-9]+", (query or "").lower())
+        if len(t) > 3 and t not in stop
+    ]
+
+
+def _lexical_hits(chunk: Chunk, terms: list[str]) -> int:
+    meta = chunk.metadata_ if isinstance(chunk.metadata_, dict) else {}
+    blob = f"{chunk.content} {meta.get('source_name') or ''} {meta.get('section') or ''}"
+    low = blob.lower()
+    return sum(1 for t in terms if t in low)
 
 
 async def hybrid_search(
@@ -102,6 +141,18 @@ async def hybrid_search(
 
     for rank, cid in enumerate(fts_ids):
         scores[cid] = scores.get(cid, 0.0) + 1.0 / (rrf_k + rank + 1)
+
+    terms = _lexical_terms(query)
+    if terms:
+        lex_ranked = sorted(
+            ((chunk, _lexical_hits(chunk, terms)) for chunk in rows),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        lex_top = [(chunk, hits) for chunk, hits in lex_ranked if hits > 0][:top_k]
+        for rank, (chunk, _) in enumerate(lex_top):
+            payloads[chunk.id] = chunk
+            scores[chunk.id] = scores.get(chunk.id, 0.0) + 1.0 / (rrf_k + rank + 1)
 
     ranked = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)[:top_k]
     results: list[RetrievedChunk] = []

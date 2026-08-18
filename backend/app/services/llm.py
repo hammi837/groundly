@@ -224,9 +224,23 @@ def _content_units(text: str) -> list[tuple[int, str]]:
     return units
 
 
+def _faq_answer(content: str) -> str:
+    m = re.search(r"(?is)answer\s*:\s*(.+)$", content or "")
+    return m.group(1).strip() if m else ""
+
+
 def _extract_relevant_excerpt(content: str, question: str, max_chars: int = 320) -> str:
     """Pull the matching sentence from a FAQ/PDF blob instead of dumping the start."""
     terms = _query_terms(question)
+    faq = _faq_answer(content)
+    # FAQ answers often omit the question words ("office hours") — still use the answer
+    # if the stored Question/title matched.
+    if faq and (not terms or _term_hits(content, terms) > 0):
+        chosen = " ".join(faq.split())
+        if len(chosen) > max_chars:
+            chosen = chosen[: max_chars - 3].rstrip() + "..."
+        return chosen
+
     units = _content_units(content)
     if not units:
         return ""
@@ -366,6 +380,22 @@ def _shape_result(
         prompt_tokens=result.prompt_tokens,
         completion_tokens=result.completion_tokens,
     )
+
+
+def _prefer_grounded(
+    result: LlmResult,
+    question: str,
+    chunks: list[RetrievedChunk],
+    business_name: str,
+) -> LlmResult:
+    """If the LLM says unknown but FAQs clearly match, use the FAQ answer."""
+    shaped = _shape_result(result, question, chunks)
+    if not shaped.was_fallback:
+        return shaped
+    rescued = _fake_answer(question, chunks, business_name)
+    if rescued.was_fallback:
+        return shaped
+    return _shape_result(rescued, question, chunks)
 
 
 def _fake_answer(question: str, chunks: list[RetrievedChunk], business_name: str) -> LlmResult:
@@ -539,13 +569,13 @@ async def generate_answer(
 
     if mode == "anthropic":
         result = await _generate_anthropic(system, user)
-        return _shape_result(result, question, chunks)
+        return _prefer_grounded(result, question, chunks, business_name)
     if mode == "groq":
         try:
             result = await _generate_groq(system, user)
         except Exception:
             result = _fake_answer(question, chunks, business_name)
-        return _shape_result(result, question, chunks)
+        return _prefer_grounded(result, question, chunks, business_name)
     raise ValueError(f"Unknown llm_mode: {settings.llm_mode}")
 
 
@@ -679,7 +709,7 @@ async def stream_answer_tokens(
     mode = settings.llm_mode.lower().strip()
 
     async def emit_shaped(result: LlmResult) -> AsyncIterator[str | LlmResult]:
-        shaped = _shape_result(result, question, chunks)
+        shaped = _prefer_grounded(result, question, chunks, business_name)
         for piece in _token_pieces(shaped.answer):
             yield piece
         yield shaped
